@@ -13,7 +13,7 @@
 # published copy with it.
 #
 # Env:
-#   LAYR8_LAUNCHER  which launcher to install: l8claude (default)
+#   LAYR8_LAUNCHER  which launcher to install: 8claude (default)
 #   LAYR8_BIN_DIR   install dir, default ~/.local/bin
 #   LAYR8_VERSION   install exactly this version, e.g. 0.2.0-rc.1
 #   LAYR8_UPDATE_CHANNEL
@@ -24,7 +24,7 @@
 #   LAYR8_CHANNEL   the broker installer's spelling of the same thing, accepted
 #                   so one documented word works for both. A SESSION already
 #                   exports LAYR8_CHANNEL=1 to mean "the Layr8 bridge is on"
-#                   (claude-code/bin/l8claude), so a `curl … | sh` typed inside
+#                   (claude-code/bin/8claude), so a `curl … | sh` typed inside
 #                   a running session arrives with LAYR8_CHANNEL=1 — a value
 #                   that is not a channel. Measured on 2026-09-24: the broker's
 #                   own published one-liner dies there with "LAYR8_CHANNEL must
@@ -34,14 +34,14 @@ set -eu
 
 REGISTRY="ghcr.io"
 IMAGE="layr8/launcher"
-BIN="${LAYR8_LAUNCHER:-l8claude}"
+BIN="${LAYR8_LAUNCHER:-8claude}"
 # oras' empty config ({} = 2 bytes); the manifest's OTHER sha256 is the binary.
 EMPTY_CONFIG="44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
 MANIFEST_ACCEPT="application/vnd.oci.image.manifest.v1+json"
 
 case "$BIN" in
-  l8claude) : ;;
-  *) echo "LAYR8_LAUNCHER must be l8claude (got ${BIN})" >&2; exit 1 ;;
+  8claude) : ;;
+  *) echo "LAYR8_LAUNCHER must be 8claude (got ${BIN})" >&2; exit 1 ;;
 esac
 
 version="${LAYR8_VERSION:-}"
@@ -153,7 +153,7 @@ if [ "$digest" != "$got" ]; then
   rm -f "$tmp"; exit 1
 fi
 
-# An existing l8claude may be the symlink an older, git-checkout install left
+# An existing 8claude may be the symlink an older, git-checkout install left
 # behind. Writing through it would overwrite a file in someone's clone, so take
 # it out of the way first; `mv` onto a symlink follows it.
 [ -L "${dest}/${BIN}" ] && rm -f "${dest}/${BIN}"
