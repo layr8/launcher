@@ -4,6 +4,11 @@
 # no GitHub login. The binary self-updates after this, forward only, on the same
 # channel the broker follows.
 #
+# One launcher per coding harness: 8claude (Claude Code), 8codex (Codex),
+# 8goose (Goose) and 8pi (Pi). Pick one with LAYR8_LAUNCHER:
+#
+#   curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_LAUNCHER=8codex sh
+#
 # Published from the public layr8/launcher repository — layr8/agents is private,
 # so only that copy can be curled without a GitHub login:
 #
@@ -13,7 +18,8 @@
 # published copy with it.
 #
 # Env:
-#   LAYR8_LAUNCHER  which launcher to install: 8claude (default)
+#   LAYR8_LAUNCHER  which launcher to install: 8claude (default), 8codex,
+#                   8goose or 8pi
 #   LAYR8_BIN_DIR   install dir, default ~/.local/bin
 #   LAYR8_VERSION   install exactly this version, e.g. 0.2.0-rc.1
 #   LAYR8_UPDATE_CHANNEL
@@ -40,8 +46,11 @@ EMPTY_CONFIG="44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
 MANIFEST_ACCEPT="application/vnd.oci.image.manifest.v1+json"
 
 case "$BIN" in
-  8claude) : ;;
-  *) echo "LAYR8_LAUNCHER must be 8claude (got ${BIN})" >&2; exit 1 ;;
+  8claude) HARNESS="Claude Code" ;;
+  8codex) HARNESS="Codex" ;;
+  8goose) HARNESS="Goose" ;;
+  8pi) HARNESS="Pi" ;;
+  *) echo "LAYR8_LAUNCHER must be 8claude, 8codex, 8goose or 8pi (got ${BIN})" >&2; exit 1 ;;
 esac
 
 version="${LAYR8_VERSION:-}"
@@ -153,7 +162,7 @@ if [ "$digest" != "$got" ]; then
   rm -f "$tmp"; exit 1
 fi
 
-# An existing 8claude may be the symlink an older, git-checkout install left
+# An existing launcher may be the symlink an older, git-checkout install left
 # behind. Writing through it would overwrite a file in someone's clone, so take
 # it out of the way first; `mv` onto a symlink follows it.
 [ -L "${dest}/${BIN}" ] && rm -f "${dest}/${BIN}"
@@ -176,6 +185,6 @@ case ":${PATH}:" in
 esac
 if "${dest}/${BIN}" --version >/dev/null 2>&1; then
   echo "OK. Next:"
-  echo "  1. ${BIN} install       # connect Claude Code to the agent this machine's broker holds"
+  echo "  1. ${BIN} install       # connect ${HARNESS} to the agent this machine's broker holds"
   echo "  2. ${BIN}               # start a session"
 fi
