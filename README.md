@@ -1,12 +1,21 @@
 # layr8 launcher
 
-Single-file binaries and a one-line installer for **`8claude`** — the launcher
-that runs Claude Code as an agent on a layr8 Space, through the local broker.
+Single-file binaries and a one-line installer for the layr8 **launchers** —
+each runs one coding harness as an agent on a layr8 Space, through the local
+broker:
+
+| launcher | harness |
+|----------|---------|
+| `8claude` | Claude Code |
+| `8codex`  | Codex |
+| `8goose`  | Goose |
+| `8pi`     | Pi |
 
 ## Install (no Node required)
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | sh                        # 8claude
+curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_LAUNCHER=8codex sh   # or 8goose, 8pi
 ```
 
 macOS and Linux (arm64 / x64). Installs to `~/.local/bin` (override with
@@ -19,8 +28,9 @@ machine — one broker serves every launcher and every session on it:
 curl -fsSL https://raw.githubusercontent.com/layr8/broker/main/install.sh | sh
 ```
 
-Then claim the agent from the portal (**Agents → Connect an agent**), and start
-a session with `8claude` instead of `claude`.
+Then claim the agent from the portal (**Agents → Connect an agent**), run
+`<launcher> install` once, and start a session with `8claude` instead of
+`claude` (`8codex` instead of `codex`, and so on).
 
 ## Choosing a version
 
@@ -51,12 +61,13 @@ layr8-broker service install --env <label>
 ## Distribution
 
 Binaries are published to the public OCI registry **`ghcr.io/layr8/launcher`**,
-one tag per launcher and platform (`8claude-latest-darwin-arm64` and so on). The
+one tag per launcher and platform (`8claude-latest-darwin-arm64`,
+`8codex-latest-linux-x64` and so on). The
 installer and the launcher's self-update pull anonymously from there and verify
 each download against its content digest.
 
-`LAYR8_LAUNCHER` selects which launcher to install. Today `8claude` is the only
-one published.
+`LAYR8_LAUNCHER` selects which launcher to install: `8claude` (the default),
+`8codex`, `8goose` or `8pi`. Each is released and versioned on its own.
 
 This repository holds the installer script and nothing else. It is written and
 reviewed elsewhere; a check in that repository fails if this published copy
