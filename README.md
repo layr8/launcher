@@ -1,6 +1,6 @@
 # layr8 launcher
 
-Single-file binaries and a one-line installer for **`l8claude`** — the launcher
+Single-file binaries and a one-line installer for **`8claude`** — the launcher
 that runs Claude Code as an agent on a layr8 Space, through the local broker.
 
 ## Install (no Node required)
@@ -20,7 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/layr8/broker/main/install.sh | sh
 ```
 
 Then claim the agent from the portal (**Agents → Connect an agent**), and start
-a session with `l8claude` instead of `claude`.
+a session with `8claude` instead of `claude`.
 
 ## Choosing a version
 
@@ -51,11 +51,11 @@ layr8-broker service install --env <label>
 ## Distribution
 
 Binaries are published to the public OCI registry **`ghcr.io/layr8/launcher`**,
-one tag per launcher and platform (`l8claude-latest-darwin-arm64` and so on). The
+one tag per launcher and platform (`8claude-latest-darwin-arm64` and so on). The
 installer and the launcher's self-update pull anonymously from there and verify
 each download against its content digest.
 
-`LAYR8_LAUNCHER` selects which launcher to install. Today `l8claude` is the only
+`LAYR8_LAUNCHER` selects which launcher to install. Today `8claude` is the only
 one published.
 
 This repository holds the installer script and nothing else. It is written and
