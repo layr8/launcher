@@ -5,9 +5,15 @@
 # channel the broker follows.
 #
 # One launcher per coding harness: 8claude (Claude Code), 8codex (Codex),
-# 8goose (Goose) and 8pi (Pi). Pick one with LAYR8_LAUNCHER:
+# 8goose (Goose) and 8pi (Pi). Pick one with LAYR8_LAUNCHER, and name the
+# agent with LAYR8_PROFILE — the portal prints this line with both filled in:
 #
-#   curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_LAUNCHER=8codex sh
+#   curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_LAUNCHER=8codex LAYR8_PROFILE=<space>/<name> sh
+#
+# With LAYR8_PROFILE, the installed launcher's own `install --profile` runs
+# right after the download, so the one line leaves the launcher registered
+# with its harness and the agent named: the next thing to type is the session.
+# Without it, only the binary is installed.
 #
 # Published from the public layr8/launcher repository — layr8/agents is private,
 # so only that copy can be curled without a GitHub login:
@@ -20,6 +26,11 @@
 # Env:
 #   LAYR8_LAUNCHER  which launcher to install: 8claude (default), 8codex,
 #                   8goose or 8pi
+#   LAYR8_PROFILE   the agent's full name, <space>/<name>, as the portal shows
+#                   it. Runs `<launcher> install --profile <it>` after the
+#                   download. The agent must already be enrolled (the
+#                   portal's `layr8-broker enrol …` line). Read by this script
+#                   only; nothing is saved from it and no launcher reads it.
 #   LAYR8_BIN_DIR   install dir, default ~/.local/bin
 #   LAYR8_VERSION   install exactly this version, e.g. 0.2.0-rc.1
 #   LAYR8_UPDATE_CHANNEL
@@ -183,8 +194,35 @@ case ":${PATH}:" in
   *":${dest}:"*) : ;;
   *) echo "NOTE: ${dest} is not on your PATH — add it, e.g.  export PATH=\"${dest}:\$PATH\"" ;;
 esac
-if "${dest}/${BIN}" --version >/dev/null 2>&1; then
-  echo "OK. Next:"
-  echo "  1. ${BIN} install       # connect ${HARNESS} to the agent this machine's broker holds"
-  echo "  2. ${BIN}               # start a session"
+# Every run of the installed binary below reads its stdin from /dev/null. This
+# script usually arrives as `curl … | sh`, so sh is reading the script itself
+# from stdin: anything that read it — the launcher, or the harness CLI it runs
+# — would swallow the rest of this file.
+if ! "${dest}/${BIN}" --version </dev/null >/dev/null 2>&1; then
+  echo "${dest}/${BIN} was installed but does not run on this machine — nothing was set up." >&2
+  exit 1
 fi
+
+# 6. set the launcher up for the agent the portal named. What `install`
+# prints is the launcher's own account of what it did and the command to run
+# next, so it is shown as it is; this script only adds what a refusal means
+# for the line that was run: the binary is in place, so the same line is safe
+# to run again once the problem it names is fixed.
+profile="${LAYR8_PROFILE:-}"
+if [ -n "$profile" ]; then
+  echo ""
+  if "${dest}/${BIN}" install --profile "$profile" </dev/null; then
+    exit 0
+  fi
+  echo "" >&2
+  echo "${BIN} is installed, but ${HARNESS} is not set up for ${profile} yet. Fix what is said above, then run this same line again." >&2
+  exit 1
+fi
+
+# No agent named: the binary is all this run was asked for. 8pi can start a
+# session straight away; the others register with their harness first.
+case "$BIN" in
+  8pi) next="${BIN} --profile <space>/<name>" ;;
+  *) next="${BIN} install --profile <space>/<name>" ;;
+esac
+echo "Next:  ${next}   (<space>/<name> is the agent's full name — copy it from the portal, Agents)"
