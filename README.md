@@ -13,10 +13,18 @@ broker:
 
 ## Install (no Node required)
 
+The portal (**Agents → Connect an agent**) prints this line with both values
+filled in:
+
 ```sh
-curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | sh                        # 8claude
-curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_LAUNCHER=8codex sh   # or 8goose, 8pi
+curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_LAUNCHER=8claude LAYR8_PROFILE=<space>/<name> sh
 ```
+
+`LAYR8_LAUNCHER` is `8claude`, `8codex`, `8goose` or `8pi`. `LAYR8_PROFILE` is
+the agent's full name as the portal shows it; with it, the installer runs the
+launcher's own `install --profile <space>/<name>` right after the download, so
+the one line leaves the harness set up for that agent. Without it, only the
+binary is installed.
 
 macOS and Linux (arm64 / x64). Installs to `~/.local/bin` (override with
 `LAYR8_BIN_DIR`).
@@ -28,15 +36,16 @@ machine — one broker serves every launcher and every session on it:
 curl -fsSL https://raw.githubusercontent.com/layr8/broker/main/install.sh | sh
 ```
 
-Then claim the agent from the portal (**Agents → Connect an agent**), run
-`<launcher> install` once, and start a session with `8claude` instead of
-`claude` (`8codex` instead of `codex`, and so on).
+Enrol the agent first with the `layr8-broker enrol --profile <space>/<name> …`
+line the portal gives you, then run the installer line above, and start each
+session with `8claude --profile <space>/<name>` instead of `claude`
+(`8codex`, `8goose` and `8pi` the same way).
 
 ## Choosing a version
 
 ```sh
 # exactly one version, a prerelease included
-curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_VERSION=0.1.0 sh
+curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_VERSION=0.2.0 sh
 # the next channel: the newest release, prereleases included, followed from then on
 curl -fsSL https://raw.githubusercontent.com/layr8/launcher/main/install.sh | LAYR8_UPDATE_CHANNEL=next sh
 ```
@@ -55,7 +64,7 @@ downgrade an installed binary.
 Nothing to schedule for the launcher. To keep the broker running and current:
 
 ```sh
-layr8-broker service install --env <label>
+layr8-broker service install --env <space>/<name>
 ```
 
 ## Distribution
